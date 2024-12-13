@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Camera Viewer</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f3f3f3;
+            font-family: Arial, sans-serif;
+        }
+        video {
+            width: 90%;
+            max-width: 500px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <video id="camera-feed" autoplay playsinline></video>
+    <button id="start-camera">Start Camera</button>
+
+    <script>
+        const videoElement = document.getElementById('camera-feed');
+        const startButton = document.getElementById('start-camera');
+
+        startButton.addEventListener('click', async () => {
+            try {
+                // Request camera access
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                // Set the video element's source to the camera stream
+                videoElement.srcObject = stream;
+                startButton.style.display = 'none'; // Hide button after starting the camera
+            } catch (error) {
+                alert('Error accessing camera: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
