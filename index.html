@@ -40,21 +40,47 @@
 <body>
     <video id="camera-feed" autoplay playsinline></video>
     <button id="start-camera">Start Camera</button>
+    <button id="switch-camera" style="display: none;">Switch Camera</button>
 
     <script>
         const videoElement = document.getElementById('camera-feed');
         const startButton = document.getElementById('start-camera');
+        const switchButton = document.getElementById('switch-camera');
 
-        startButton.addEventListener('click', async () => {
+        let currentStream = null;
+        let useFrontCamera = true;
+
+        async function startCamera() {
             try {
-                // Request camera access
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                // Set the video element's source to the camera stream
+                // Stop any existing video stream
+                if (currentStream) {
+                    currentStream.getTracks().forEach(track => track.stop());
+                }
+
+                // Access the camera
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: useFrontCamera ? "user" : "environment" },
+                    audio: false
+                });
+                currentStream = stream;
+
+                // Display the video stream
                 videoElement.srcObject = stream;
-                startButton.style.display = 'none'; // Hide button after starting the camera
+                startButton.style.display = 'none';
+                switchButton.style.display = 'inline-block'; // Show switch button
             } catch (error) {
-                alert('Error accessing camera: ' + error.message);
+                console.error('Error accessing camera:', error);
+                alert(`Error accessing camera: ${error.message}`);
             }
+        }
+
+        // Start the camera on button click
+        startButton.addEventListener('click', startCamera);
+
+        // Switch between front and back cameras
+        switchButton.addEventListener('click', () => {
+            useFrontCamera = !useFrontCamera;
+            startCamera();
         });
     </script>
 </body>
